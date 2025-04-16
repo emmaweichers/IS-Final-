@@ -1,0 +1,66 @@
+
+ol,ul {
+    display: inline-block;
+    text-align: left;
+}
+
+body{
+    background-color: rgb(34, 132, 132);  
+}
+
+.main {
+    background-color: rgb(34, 132, 132);  
+    font-family :Arial, Helvetica, sans-serif; 
+    text-align: center;
+    /* padding: 10px;
+    border : 5px solid white;
+    margin: 20px;   */
+   }
+
+img { 
+    width: 50%;
+
+}
+
+.header { 
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    height: 100 px;
+    background-color: black;
+    line-height: 100px;
+    text-align: center ;
+
+}
+
+
+.footer {
+    height: 50px;
+    font-size: 25px;
+    padding-top: 15px;
+    padding-left: 20px; /* More space on the left */
+    padding-right: 20px; /* More space on the right */
+    background-color: black;
+    color: white;
+    bottom: 0;
+    right: 5px;
+    left: 5px;
+    position: relative;
+    display: flex; /* Enable flexbox */
+    justify-content: space-evenly; /* Distribute space evenly between items but closer to each other */
+    align-items: center; /* Vertically center the items */
+}
+
+.footer a {
+    margin: 0 10px; /* Adjust margin between the links and the text */
+
+        color: white; /* Ensure the links are always white */
+        text-decoration: none; /* Optional: Removes the underline from links */
+        margin: 0 10px; /* Adjust margin between the links and the text */
+    
+}
+.footer a:link,
+.footer a:visited,
+.footer a:active,
+.footer a:hover { 
+    color: white; /* Always keep the links white */
+}

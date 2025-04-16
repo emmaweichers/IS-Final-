@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ocean Hangman - Build a Fish</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to top, #0077be, #00c2cb);
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    #canvasContainer {
+      margin: 0 auto 30px;
+    }
+
+    canvas {
+      background-color: #e0f7fa;
+      border: 2px solid #0077be;
+      border-radius: 10px;
+    }
+
+    #wordDisplay {
+      font-size: 2em;
+      letter-spacing: 10px;
+      margin: 20px 0;
+    }
+
+    #letters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .letter-btn {
+      background: #00bfff;
+      border: none;
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 1.2em;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .letter-btn:disabled {
+      background: #004f6e;
+      cursor: not-allowed;
+    }
+
+    #message {
+      font-size: 1.8em;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    #restartBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      background-color: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      display: none;
+    }
+    .link-button {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 1.1em;
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.link-button:hover {
+  background-color: #008c9e;
+}
+
+
+  </style>
+</head>
+<body>
+  <h1>Ocean Hangman 🐠</h1>
+  <div id="canvasContainer">
+    <canvas id="fishCanvas" width="300" height="200"></canvas>
+  </div>
+  <div id="wordDisplay"></div>
+  <div id="letters"></div>
+  <div id="message"></div>
+  <button id="restartBtn" onclick="startGame()">Play Again</button>
+  <a href="scratch.html" target="_blank" class="link-button">Go to scratch</a>
+
+
+  <script>
+    const wordList = ['dolphin', 'coral', 'octopus', 'whale', 'seashell', 'seahorse', 'starfish', 'ocean', 'shark'];
+
+    const maxWrongGuesses = 7;
+    let selectedWord, guessedLetters, wrongGuesses;
+
+    const wordDisplay = document.getElementById('wordDisplay');
+    const lettersContainer = document.getElementById('letters');
+    const messageDisplay = document.getElementById('message');
+    const restartBtn = document.getElementById('restartBtn');
+    const canvas = document.getElementById('fishCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function startGame() {
+      selectedWord = wordList[Math.floor(Math.random() * wordList.length)];
+      guessedLetters = [];
+      wrongGuesses = 0;
+      messageDisplay.textContent = '';
+      restartBtn.style.display = 'none';
+      updateWordDisplay();
+      createLetterButtons();
+      clearCanvas();
+    }
+
+    function updateWordDisplay() {
+      wordDisplay.textContent = selectedWord
+        .split('')
+        .map(letter => guessedLetters.includes(letter) ? letter : '_')
+        .join(' ');
+    }
+
+    function createLetterButtons() {
+      lettersContainer.innerHTML = '';
+      for (let i = 65; i <= 90; i++) {
+        const letter = String.fromCharCode(i).toLowerCase();
+        const btn = document.createElement('button');
+        btn.textContent = letter;
+        btn.className = 'letter-btn';
+        btn.onclick = () => handleGuess(letter, btn);
+        lettersContainer.appendChild(btn);
+      }
+    }
+
+    function handleGuess(letter, button) {
+      button.disabled = true;
+      if (selectedWord.includes(letter)) {
+        guessedLetters.push(letter);
+        updateWordDisplay();
+        checkWin();
+      } else {
+        wrongGuesses++;
+        drawFishPart(wrongGuesses);
+        checkLose();
+      }
+    }
+
+    function checkWin() {
+      const wordGuessed = selectedWord.split('').every(letter => guessedLetters.includes(letter));
+      if (wordGuessed) {
+        messageDisplay.textContent = '🎉 You saved the fish! 🌊';
+        endGame();
+      }
+    }
+
+    function checkLose() {
+      if (wrongGuesses >= maxWrongGuesses) {
+        messageDisplay.textContent = `🐟 The fish is complete! The word was "${selectedWord}"`;
+        endGame();
+      }
+    }
+
+    function endGame() {
+      document.querySelectorAll('.letter-btn').forEach(btn => btn.disabled = true);
+      restartBtn.style.display = 'inline-block';
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawFishPart(stage) {
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#004d40';
+      ctx.fillStyle = '#4dd0e1';
+
+      switch(stage) {
+        case 1: // Head
+          ctx.beginPath();
+          ctx.arc(80, 100, 30, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+        case 2: // Body
+          ctx.beginPath();
+          ctx.ellipse(150, 100, 50, 30, 0, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+        case 3: // Tail
+          ctx.beginPath();
+          ctx.moveTo(200, 85);
+          ctx.lineTo(240, 70);
+          ctx.lineTo(240, 130);
+          ctx.lineTo(200, 115);
+          ctx.closePath();
+          ctx.fillStyle = '#26c6da';
+          ctx.fill();
+          break;
+        case 4: // Top Fin
+          ctx.beginPath();
+          ctx.moveTo(120, 70);
+          ctx.lineTo(130, 40);
+          ctx.lineTo(140, 70);
+          ctx.closePath();
+          ctx.fillStyle = '#00acc1';
+          ctx.fill();
+          break;
+        case 5: // Bottom Fin
+          ctx.beginPath();
+          ctx.moveTo(130, 130);
+          ctx.lineTo(140, 160);
+          ctx.lineTo(150, 130);
+          ctx.closePath();
+          ctx.fill();
+          break;
+        case 6: // Eye
+          ctx.beginPath();
+          ctx.arc(70, 90, 5, 0, Math.PI * 2);
+          ctx.fillStyle = 'white';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(70, 90, 2, 0, Math.PI * 2);
+          ctx.fillStyle = 'black';
+          ctx.fill();
+          break;
+        case 7: // Mouth
+          ctx.beginPath();
+          ctx.arc(65, 110, 7, 0, Math.PI);
+          ctx.stroke();
+          break;
+      }
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
